@@ -9,6 +9,10 @@ filename = ''
 argv = sys.argv
 argc = len(argv)
 
+if argc == 1:
+    print('\nERROR: Not enough arguments')
+    print('Usage:\n\tupload.py <filename>\n\tupload.py <path to file> <filename>')
+    exit()
 if argc == 2:
     filename = argv[1]
     path = os.path.dirname(os.path.realpath(__file__))
