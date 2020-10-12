@@ -3,6 +3,7 @@ import config
 import sys
 import os
 import zipfile
+import threading
 
 secrets = config.get()
 
@@ -12,12 +13,12 @@ SecretKey = secrets['SECRET_KEY']
 session = boto3.Session(aws_access_key_id=AccessKey, aws_secret_access_key=SecretKey)
 s3 = session.resource('s3')
 
-for i in range(2,7):
+def task(i):
     prefix = 'N_Test/Relays/{}/'.format(str(i))
     bucket = s3.Bucket('besi-c').objects.filter(Prefix=prefix)
     files = []
     for m in bucket:
-        print(m.key)
+        #print(m.key)
         #break
         s3.meta.client.download_file('besi-c',m.key,'./tmp/file.zip')
         with zipfile.ZipFile('./tmp/file.zip') as z:
@@ -30,9 +31,9 @@ for i in range(2,7):
                         if nfn not in files:
                             files.append(nfn)
                         nf.write(f)
-                break
+                #break
                     
-        break
+        #break
     for fname in files:
         try:
             with open(fname, "rb") as f:
@@ -42,4 +43,10 @@ for i in range(2,7):
                 print(aws_path)
         except:
             print("error")
-    break
+    #break
+
+
+for i in range(2,7):
+    x = threading.Thread(target=task, args=(i,))
+    x.start()
+    continue
